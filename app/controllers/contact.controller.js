@@ -4,12 +4,16 @@ const ApiError = require("../api-error");
 
 
 
+
+
+
+
 exports.findAll = async(req, res, next) => {
     let document = [];
     
     try{
         const contactService = new ContactService(MongoDB.client);
-        const {name} = req.query;
+        const { name } = req.query;
 
         if(name){
             document = await contactService.findByName(name);
@@ -25,6 +29,23 @@ exports.findAll = async(req, res, next) => {
     }
     return res.send(document);
 }
+
+
+exports.create = async (req, res, next) => {
+    if(!req.body?.name){
+        return next(new ApiError(400, 'Name can not be empty'));
+    }
+
+    try{
+        const contactService = new ContactService(MongoDB.client);
+        const document = await contactService.create(req.body);
+        return res.send(document);
+    }catch(error){
+        return next(
+            new ApiError(500, 'An error occurred while creating the contact')
+        );
+    }
+};
 
 
 exports.findOne = async(req, res, next) => {
@@ -49,21 +70,6 @@ exports.findOne = async(req, res, next) => {
 
 
 
-exports.create = async (req, res, next) => {
-    if(!req.body?.name){
-        return next(new ApiError(400, 'Name can not be empty'));
-    }
-
-    try{
-        const contactService = new ContactService(MongoDB.client);
-        const document = await contactService.create(req.body);
-        return res.send(document);
-    }catch(error){
-        return next(
-            new ApiError(500, 'An error occurred while creating the contact')
-        );
-    }
-};
 
 exports.update = async(req, res, next) => {
     if(Object.keys(req.body).length === 0){
@@ -103,7 +109,7 @@ exports.delete = async(req, res, next) => {
 exports.findAllFavorite = async(_req, res, next) => {
     try{
         const contactService = new ContactService(MongoDB.client);
-        const document = await contactService.findAllFavorite();
+        const document = await contactService.findFavorite();
         return res.send(document);
     }catch(error){
         return next(

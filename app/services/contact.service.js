@@ -1,8 +1,8 @@
-const {ObjectId} = require("mongodb");
+const { ObjectId } = require("mongodb");
 
 class ContactService{
     constructor(client){
-        this.Contact = client.db().collection('contacts');
+        this.Contact = client.db().collection("contacts");
     }
 
     //Dinh nghia cac phuong thuc truy xuat CSDL su dung mongoDB API
@@ -15,8 +15,8 @@ class ContactService{
             favorite: payload.favorite,
         };
 
-        //Remove undefined fields
-        Objects.keys(contact).forEach(
+        // Removed undefined fields
+        Object.keys(contact).forEach(
             (key) => contact[key] === undefined && delete contact[key]
         );
         return contact;
@@ -65,7 +65,8 @@ class ContactService{
     async delete(id){
         const result = await this.Contact.findOneAndDelete({
             _id:ObjectId.isValid(id) ? new ObjectId(id): null,
-        })
+        });
+        return result.value;
     }
 
     async findFavorite(){
